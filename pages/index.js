@@ -1,65 +1,47 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React, { useState, useEffect } from "react";
+import Router from 'next/router';
+import { setRoomCode, getRoomCode } from "../services/roomCode";
 
 export default function Home() {
+  const [roomCodeInput, setRoomCodeInput] = useState("");
+  let errors = {};
+
+  useEffect(() => {
+    if (getRoomCode()) {
+      Router.push(`/rooms/${getRoomCode()}`)
+    }
+  }, []);
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const setRoomCodeResponse = setRoomCode(roomCodeInput);
+    if (setRoomCodeResponse !== null) {
+      Router.push(`/rooms/${setRoomCodeResponse}`);
+    } else {
+      alert("Invalid room code")
+      setRoomCodeInput("");
+    }
+  }
+
+  const handleCreateRoom = () => {
+    // create room via API
+    // redirect to new room
+  }
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className="mt-2 text-green-800">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+    <div>
+      <p>roomCode: {roomCodeInput}</p>
+      <form onSubmit={handleFormSubmit}>
+        <input
+          type="text"
+          value={roomCodeInput}
+          onChange={(e) => setRoomCodeInput(e.target.value)}
+          placeholder="Room Code"
+        />
+        <br />
+        <input type="submit" value="Go" />
+        <input type="button" value="Create A Room" onClick={() => handleCreateRoom()} />
+      </form>
     </div>
-  )
+  );
 }
